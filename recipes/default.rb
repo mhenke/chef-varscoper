@@ -24,7 +24,6 @@ package "unzip" do
 end
 
 file_name = node['varscoper']['download']['url'].split('/').last
-folder_name = file_name.split('.').first
 
 node.set['varscoper']['owner'] = node['cf10']['installer']['runtimeuser'] if node['varscoper']['owner'] == nil
 
@@ -57,8 +56,8 @@ script "install_varscoper" do
   user "root"
   cwd "#{Chef::Config['file_cache_path']}"
   code <<-EOH
-unzip #{file_name} 
-mv varscoper-master #{node['varscoper']['install_path']}
+unzip #{file_name}
+mv varscoper-master #{node['varscoper']['install_path']}/varscoper
 chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/varscoper
 EOH
   not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper") }
