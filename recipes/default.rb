@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: cloudy
+# Cookbook Name:: varscoper
 # Recipe:: default
 #
 # Copyright 2012, Nathan Mische
@@ -19,47 +19,47 @@
 
 # Install the unzip package
 
-file_name = node['cloudy']['download']['url'].split('/').last
+file_name = node['varscoper']['download']['url'].split('/').last
 
-node.set['cloudy']['owner'] = node['cf10']['installer']['runtimeuser'] if node['cloudy']['owner'] == nil
+node.set['varscoper']['owner'] = node['cf10']['installer']['runtimeuser'] if node['varscoper']['owner'] == nil
 
-# Download cloudy
+# Download varscoper
 
 remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
-  source "#{node['cloudy']['download']['url']}"
+  source "#{node['varscoper']['download']['url']}"
   action :create_if_missing
   mode "0744"
   owner "root"
   group "root"
-  not_if { File.directory?("#{node['cloudy']['install_path']}/develop") }
+  not_if { File.directory?("#{node['varscoper']['install_path']}/develop") }
 end
 
 # Create the target install directory if it doesn't exist
 
-directory "#{node['cloudy']['install_path']}" do
-  owner node['cloudy']['owner']
-  group node['cloudy']['group']
+directory "#{node['varscoper']['install_path']}" do
+  owner node['varscoper']['owner']
+  group node['varscoper']['group']
   mode "0755"
   recursive true
   action :create
-  not_if { File.directory?("#{node['cloudy']['install_path']}") }
+  not_if { File.directory?("#{node['varscoper']['install_path']}") }
 end
 
 # Extract archive
 
-script "install_cloudy" do
+script "install_varscoper" do
   interpreter "bash"
   user "root"
   cwd "#{Chef::Config['file_cache_path']}"
   code <<-EOH
 unzip #{file_name} 
-mv Cloudy-With-A-Chance-Of-Tests-develop/* #{node['cloudy']['install_path']}
-chown -R #{node['cloudy']['owner']}:#{node['cloudy']['group']} #{node['cloudy']['install_path']}
+mv varscoper4/* #{node['varscoper']['install_path']}
+chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}
 EOH
-  not_if { File.directory?("#{node['cloudy']['install_path']}/Cloudy-With-A-Chance-Of-Tests-develop") }
+  not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper4") }
 end
 
-execute "start_cf_for_cloudy_default_cf_config" do
+execute "start_cf_for_varscoper_default_cf_config" do
   command "/bin/true"
   notifies :start, "service[coldfusion]", :immediately
 end
