@@ -23,7 +23,7 @@ package "unzip" do
   action :install
 end
 
-file_name = node['varscoper']['download']['url'].split('/').last
+file_name = 'varscoper4'
 
 node.set['varscoper']['owner'] = node['cf10']['installer']['runtimeuser'] if node['varscoper']['owner'] == nil
 
