@@ -57,7 +57,7 @@ mv varscoper-master #{node['varscoper']['install_path']}/varscoper
 chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/varscoper
 EOH
   rm  #{file_name}
-  rm -rf 'varscoper-master'
+  rm -rf {'varscoper-master'}
   not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper") }
 end
 
