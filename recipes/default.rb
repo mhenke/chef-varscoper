@@ -59,3 +59,30 @@ chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['var
 EOH
   not_if { File.directory?("#{node['varscoper']['install_path']}/#{file_name}") }
 end
+
+# Set up ColdFusion mapping
+execute "start_cf_for_varscoper_default_cf_config" do
+  command "/bin/true"
+  notifies :start, "service[coldfusion]", :immediately
+end
+
+coldfusion10_config "extensions" do
+  action :set
+  property "mapping"
+  args ({ "mapName" => "/#{file_name}",
+          "mapPath" => "#{node['varscoper']['install_path']}/#{file_name}"})
+end
+
+# Create a global apache alias if desired
+template "#{node['apache']['dir']}/conf.d/global-varscoper-alias" do
+  source "global-varscoper-alias.erb"
+  owner node['apache']['user']
+  group node['apache']['group']
+  mode "0755"
+  variables(
+    :url_path => '/#{file_name}',
+    :file_path => "#{node['varscoper']['install_path']}/#{file_name}"
+  )
+  only_if { node['varscoper']['create_apache_alias'] }
+  notifies :restart, "service[apache2]"
+end
