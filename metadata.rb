@@ -1,5 +1,5 @@
 name             "varscoper"
-maintainer       "NATHAN MISCHE"
+maintainer       "Mike Henke"
 maintainer_email "henke.mike@gmail.com"
 license          "Apache 2.0"
 description      "Installs/Configures varscoper"
