@@ -34,7 +34,7 @@ remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
   mode "0744"
   owner "root"
   group "root"
-  not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper4") }
+  not_if { File.directory?("#{node['varscoper']['install_path']}/#{file_name}") }
 end
 
 # Create the target install directory if it doesn't exist
@@ -53,9 +53,9 @@ script "install_varscoper" do
   user "root"
   cwd "#{Chef::Config['file_cache_path']}"
   code <<-EOH
-unzip #{file_name} 
-mv varscoper4 #{node['varscoper']['install_path']}
-chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/varscoper4
+unzip /tmp/vagrant-chef-1/#{file_name} 
+mv /tmp/vagrant-chef-1/#{file_name} #{node['varscoper']['install_path']}
+chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/#{file_name}
 EOH
-  not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper4") }
+  not_if { File.directory?("#{node['varscoper']['install_path']}/#{file_name}") }
 end
