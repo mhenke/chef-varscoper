@@ -58,7 +58,7 @@ script "install_varscoper" do
   cwd "#{Chef::Config['file_cache_path']}"
   code <<-EOH
 unzip #{file_name} 
-mv #{folder_name} #{node['varscoper']['install_path']}
+mv varscoper-master #{node['varscoper']['install_path']}
 chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/varscoper
 EOH
   not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper") }
