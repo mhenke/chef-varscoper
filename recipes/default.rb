@@ -18,7 +18,6 @@
 #
 
 # Install the unzip package
-
 package "unzip" do
   action :install
 end
@@ -28,7 +27,6 @@ file_name = node['mxunit']['download']['url'].split('/').last
 node.set['varscoper']['owner'] = node['cf10']['installer']['runtimeuser'] if node['varscoper']['owner'] == nil
 
 # Download varscoper
-
 remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
   source "#{node['varscoper']['download']['url']}"
   action :create_if_missing
@@ -70,7 +68,7 @@ coldfusion10_config "extensions" do
   action :set
   property "mapping"
   args ({ "mapName" => "/varscoper",
-          "mapPath" => "#{node['varscoper']['install_path']}/varscoper"})
+          "mapPath" => "#{node['varscoper']['install_path']}/varscoper" })
 end
 
 # Create a global apache alias if desired
