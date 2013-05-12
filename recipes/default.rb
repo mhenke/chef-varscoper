@@ -18,7 +18,6 @@
 #
 
 # Install the unzip package
-
 package "unzip" do
   action :install
 end
@@ -28,7 +27,6 @@ file_name = node['varscoper']['download']['url'].split('/').last
 node.set['varscoper']['owner'] = node['cf10']['installer']['runtimeuser'] if node['varscoper']['owner'] == nil
 
 # Download varscoper
-
 remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
   source "#{node['varscoper']['download']['url']}"
   action :create_if_missing
@@ -39,7 +37,6 @@ remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
 end
 
 # Create the target install directory if it doesn't exist
-
 directory "#{node['varscoper']['install_path']}" do
   owner node['varscoper']['owner']
   group node['varscoper']['group']
@@ -50,7 +47,6 @@ directory "#{node['varscoper']['install_path']}" do
 end
 
 # Extract archive
-
 script "install_varscoper" do
   interpreter "bash"
   user "root"
@@ -64,7 +60,6 @@ EOH
 end
 
 # Set up ColdFusion mapping
-
 execute "start_cf_for_varscoper_default_cf_config" do
   command "/bin/true"
   notifies :start, "service[coldfusion]", :immediately
