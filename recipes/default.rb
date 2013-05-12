@@ -19,6 +19,10 @@
 
 # Install the unzip package
 
+package "unzip" do
+  action :install
+end
+
 file_name = node['varscoper']['download']['url'].split('/').last
 
 node.set['varscoper']['owner'] = node['cf10']['installer']['runtimeuser'] if node['varscoper']['owner'] == nil
@@ -31,11 +35,10 @@ remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
   mode "0744"
   owner "root"
   group "root"
-  not_if { File.directory?("#{node['varscoper']['install_path']}/develop") }
+  not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper4") }
 end
 
 # Create the target install directory if it doesn't exist
-
 directory "#{node['varscoper']['install_path']}" do
   owner node['varscoper']['owner']
   group node['varscoper']['group']
@@ -46,15 +49,14 @@ directory "#{node['varscoper']['install_path']}" do
 end
 
 # Extract archive
-
 script "install_varscoper" do
   interpreter "bash"
   user "root"
   cwd "#{Chef::Config['file_cache_path']}"
   code <<-EOH
 unzip #{file_name} 
-mv varscoper4/* #{node['varscoper']['install_path']}
-chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}
+mv varscoper4 #{node['varscoper']['install_path']}
+chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/varscoper4
 EOH
   not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper4") }
 end
@@ -62,4 +64,25 @@ end
 execute "start_cf_for_varscoper_default_cf_config" do
   command "/bin/true"
   notifies :start, "service[coldfusion]", :immediately
+end
+
+coldfusion10_config "extensions" do
+  action :set
+  property "mapping"
+  args ({ "mapName" => "/varscoper4",
+          "mapPath" => "#{node['varscoper4']['install_path']}/varscoper4"})
+end
+
+# Create a global apache alias if desired
+template "#{node['apache']['dir']}/conf.d/global-varscoper4-alias" do
+  source "global-varscoper4-alias.erb"
+  owner node['apache']['user']
+  group node['apache']['group']
+  mode "0755"
+  variables(
+    :url_path => '/varscoper4',
+    :file_path => "#{node['varscoper4']['install_path']}/varscoper4"
+  )
+  only_if { node['varscoper4']['create_apache_alias'] }
+  notifies :restart, "service[apache2]"
 end
