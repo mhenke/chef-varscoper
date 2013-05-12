@@ -2,7 +2,7 @@
 # Cookbook Name:: varscoper
 # Recipe:: default
 #
-# Copyright 2012, Mike Henke
+# Copyright 2013, Mike Henke
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ package "unzip" do
   action :install
 end
 
-file_name = 'varscoper-master'
+file_name = node['mxunit']['download']['url'].split('/').last
 
 node.set['varscoper']['owner'] = node['cf10']['installer']['runtimeuser'] if node['varscoper']['owner'] == nil
 
