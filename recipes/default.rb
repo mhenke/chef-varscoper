@@ -23,18 +23,19 @@ package "unzip" do
   action :install
 end
 
-file_name = 'varscoper4'
+file_name = 'varscoper-master'
 
 node.set['varscoper']['owner'] = node['cf10']['installer']['runtimeuser'] if node['varscoper']['owner'] == nil
 
 # Download varscoper
+
 remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
   source "#{node['varscoper']['download']['url']}"
   action :create_if_missing
   mode "0744"
   owner "root"
   group "root"
-  not_if { File.directory?("#{node['varscoper']['install_path']}/#{file_name}") }
+  not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper") }
 end
 
 # Create the target install directory if it doesn't exist
@@ -53,14 +54,13 @@ script "install_varscoper" do
   user "root"
   cwd "#{Chef::Config['file_cache_path']}"
   code <<-EOH
-unzip /tmp/vagrant-chef-1/#{file_name} 
-mv /tmp/vagrant-chef-1/#{file_name} #{node['varscoper']['install_path']}
-chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/#{file_name}
+unzip #{file_name} 
+mv #{file_name} #{node['varscoper']['install_path']}/varscoper
+chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/varscoper
 EOH
-  not_if { File.directory?("#{node['varscoper']['install_path']}/#{file_name}") }
+  not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper") }
 end
 
-# Set up ColdFusion mapping
 execute "start_cf_for_varscoper_default_cf_config" do
   command "/bin/true"
   notifies :start, "service[coldfusion]", :immediately
@@ -69,8 +69,8 @@ end
 coldfusion10_config "extensions" do
   action :set
   property "mapping"
-  args ({ "mapName" => "/#{file_name}",
-          "mapPath" => "#{node['varscoper']['install_path']}/#{file_name}"})
+  args ({ "mapName" => "/varscoper",
+          "mapPath" => "#{node['varscoper']['install_path']}/varscoper"})
 end
 
 # Create a global apache alias if desired
@@ -80,8 +80,8 @@ template "#{node['apache']['dir']}/conf.d/global-varscoper-alias" do
   group node['apache']['group']
   mode "0755"
   variables(
-    :url_path => '/#{file_name}',
-    :file_path => "#{node['varscoper']['install_path']}/#{file_name}"
+    :url_path => '/varscoper',
+    :file_path => "#{node['varscoper']['install_path']}/varscoper"
   )
   only_if { node['varscoper']['create_apache_alias'] }
   notifies :restart, "service[apache2]"
