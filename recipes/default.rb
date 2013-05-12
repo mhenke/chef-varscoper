@@ -59,17 +59,11 @@ EOH
   not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper") }
 end
 
-# Set up ColdFusion mapping
-execute "start_cf_for_varscoper_default_cf_config" do
-  command "/bin/true"
-  notifies :start, "service[coldfusion]", :immediately
-end
-
 coldfusion10_config "extensions" do
   action :set
   property "mapping"
   args ({ "mapName" => "/varscoper",
-          "mapPath" => "#{node['varscoper']['install_path']}/varscoper"})
+          "mapPath" => "#{node['varscoper']['install_path']}/varscoper" })
 end
 
 # Create a global apache alias if desired
@@ -86,8 +80,13 @@ template "#{node['apache']['dir']}/conf.d/global-varscoper-alias" do
   notifies :restart, "service[apache2]"
 end
 
-#Clean Up
+# Clean Up
 file "#{Chef::Config['file_cache_path']}/#{file_name}" do
+  action :delete
+end
+
+directory "#{node['varscoper']['install_path']}/varscoper-master" do
+  recursive true
   action :delete
 end
 
