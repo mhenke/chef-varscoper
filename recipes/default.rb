@@ -36,3 +36,26 @@ remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
   group "root"
   not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper4") }
 end
+
+# Create the target install directory if it doesn't exist
+directory "#{node['varscoper']['install_path']}" do
+  owner node['varscoper']['owner']
+  group node['varscoper']['group']
+  mode "0755"
+  recursive true
+  action :create
+  not_if { File.directory?("#{node['varscoper']['install_path']}") }
+end
+
+# Extract archive
+script "install_varscoper" do
+  interpreter "bash"
+  user "root"
+  cwd "#{Chef::Config['file_cache_path']}"
+  code <<-EOH
+unzip #{file_name} 
+mv varscoper4 #{node['varscoper']['install_path']}
+chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/varscoper4
+EOH
+  not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper4") }
+end
