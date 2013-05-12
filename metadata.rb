@@ -4,7 +4,7 @@ maintainer_email "henke.mike@gmail.com"
 license          "Apache 2.0"
 description      "Installs/Configures varscoper"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          "0.0.613"
+version          "0.0.614"
 
 %w{ centos redhat ubuntu }.each do |os|
   supports os
