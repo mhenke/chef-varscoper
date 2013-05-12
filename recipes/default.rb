@@ -33,7 +33,7 @@ remote_file "#{Chef::Config['file_cache_path']}/#{file_name}" do
   mode "0744"
   owner "root"
   group "root"
-  not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper") }
+  not_if { File.directory?("#{Chef::Config['file_cache_path']}/#{file_name}") }
 end
 
 # Create the target install directory if it doesn't exist
@@ -55,8 +55,6 @@ script "install_varscoper" do
 unzip #{file_name}
 mv varscoper-master #{node['varscoper']['install_path']}/varscoper
 chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/varscoper
-rm  #{file_name}
-rm -rf varscoper-master
 EOH
   not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper") }
 end
@@ -86,4 +84,14 @@ template "#{node['apache']['dir']}/conf.d/global-varscoper-alias" do
   )
   only_if { node['varscoper']['create_apache_alias'] }
   notifies :restart, "service[apache2]"
+end
+
+#Clean Up
+file "#{Chef::Config['file_cache_path']}/#{file_name}" do
+  action :delete
+end
+
+directory "#{Chef::Config['file_cache_path']}/varscoper-master" do
+  recursive true
+  action :delete
 end
