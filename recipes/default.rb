@@ -55,9 +55,9 @@ script "install_varscoper" do
 unzip #{file_name}
 mv varscoper-master #{node['varscoper']['install_path']}/varscoper
 chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/varscoper
+rm  #{file_name}
+rm -rf varscoper-master
 EOH
-  rm  #{file_name}
-  rm -rf {'varscoper-master'}
   not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper") }
 end
 
