@@ -53,17 +53,17 @@ script "install_varscoper" do
   cwd "#{Chef::Config['file_cache_path']}"
   code <<-EOH
 unzip #{file_name}
-mv varscoper-master #{node['varscoper']['install_path']}/varscoper
-chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/varscoper
+mv varscoper-master #{node['varscoper']['install_path']}/varscoper4
+chown -R #{node['varscoper']['owner']}:#{node['varscoper']['group']} #{node['varscoper']['install_path']}/varscoper4
 EOH
-  not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper") }
+  not_if { File.directory?("#{node['varscoper']['install_path']}/varscoper4") }
 end
 
 coldfusion10_config "extensions" do
   action :set
   property "mapping"
-  args ({ "mapName" => "/varscoper",
-          "mapPath" => "#{node['varscoper']['install_path']}/varscoper" })
+  args ({ "mapName" => "/varscoper4",
+          "mapPath" => "#{node['varscoper']['install_path']}/varscoper4" })
 end
 
 # Create a global apache alias if desired
